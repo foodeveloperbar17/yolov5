@@ -57,11 +57,11 @@ def train_test_split(src, train_dir, test_dir, test_ratio=0.2, image_extention='
     text_file_dest = ''
     image_file_dest = ''
     if random.uniform(0, 1) < test_ratio:
-      text_file_dest = join(test_dir, text_file)
-      image_file_dest = join(test_dir, image_file)
+      text_file_dest = join(test_dir, 'labels', text_file)
+      image_file_dest = join(test_dir, 'images', image_file)
     else :
-      text_file_dest = join(train_dir, text_file)
-      image_file_dest = join(train_dir, image_file)
+      text_file_dest = join(train_dir, 'labels', text_file)
+      image_file_dest = join(train_dir, 'images', image_file)
     
     shutil.copy2(join(src, text_file, text_file_dest))
     shutil.copy2(join(src, image_file, image_file_dest))
