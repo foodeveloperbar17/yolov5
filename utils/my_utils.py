@@ -59,6 +59,12 @@ def force_create_folder(dir_path):
 def train_test_split(image_src, label_src, train_dir, test_dir, test_ratio=0.2, image_extention='jpg'):
   force_create_folder(train_dir)
   force_create_folder(test_dir)
+  
+  force_create_folder(join(train_dir, 'labels'))
+  force_create_folder(join(train_dir, 'images'))
+  force_create_folder(join(test_dir, 'labels'))
+  force_create_folder(join(test_dir, 'images'))
+  
   text_files = get_text_files_from_dir(label_src)
   for text_file in text_files:
     image_file = text_file[:-4] + '.' + image_extention
