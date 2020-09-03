@@ -47,7 +47,7 @@ def copy_labeled_images(src, dest, image_extention='jpg'):
     shutil.copy2(join(src, image_file_name), join(dest, image_file_name))
 
 def copy_labels_to_dir(labels_dir, images_dir):
-  text_files = [f for f in os.listdir(labels_dir)]
+  text_files = [f for f in os.listdir(labels_dir) if '.txt' in f]
   print(len(os.listdir(images_dir)))
   for text_file in text_files:
     shutil.copy2(join(labels_dir, text_file), join(images_dir, text_file))
