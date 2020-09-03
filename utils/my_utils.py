@@ -63,8 +63,8 @@ def train_test_split(src, train_dir, test_dir, test_ratio=0.2, image_extention='
       text_file_dest = join(train_dir, 'labels', text_file)
       image_file_dest = join(train_dir, 'images', image_file)
     
-    shutil.copy2(join(src, text_file, text_file_dest))
-    shutil.copy2(join(src, image_file, image_file_dest))
+    shutil.copy2(join(src, text_file), text_file_dest)
+    shutil.copy2(join(src, image_file), image_file_dest)
 
 def get_text_files_from_dir(dir_path):
   return [f for f in os.listdir(dir_path) if '.txt' in f]
