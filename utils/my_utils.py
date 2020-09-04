@@ -80,3 +80,27 @@ def train_test_split(image_src, label_src, train_dir, test_dir, test_ratio=0.2, 
     shutil.copy2(join(label_src, text_file), text_file_dest)
     shutil.copy2(join(image_src, image_file), image_file_dest)
     
+def change_class_labels(dir, new_class):
+  all_text_files = [f for f in os.listdir(dir) if f.endswith('.txt')]
+  for f in all_text_files:
+    old_path = join(dir, f)
+    new_path = join(dir, f + '.luka')
+    with open(old_path, 'r') as reader:
+      with open(new_path, 'w') as writer:
+        for line in reader.readlines():
+          line_list = line.split() # 5 entries
+          line_list[0] = new_class
+          new_line = ' '.join(line_list) + '\n'
+          writer.write(new_line)
+    os.remove(old_path)
+    os.rename(new_path, old_path)
+
+def copy_n_items(src, dest, n_items):
+  # TEST
+  print(len(os.listdir(dest)))
+  
+  for f in os.listdir(src)[:n_items]:
+    shutil.copy2(join(src, f), join(dest, f))
+  
+  # TEST
+  print(len(os.listdir(dest)))
