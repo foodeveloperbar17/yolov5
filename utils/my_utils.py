@@ -135,11 +135,6 @@ def get_coordinates_from_textfiles(textfiles_list):
   for textfile in textfiles_list:
     with open(textfile, 'r') as reader:
       curr_coords = []
-  #     for line in reader.readlines():
-  #       parts = line.split()
-  #       curr_coords.append([float(parts[1]), float(parts[2]), float(parts[3]), float(parts[4])])
-  #     coords.append(curr_coords)
-  # return coords
       for line in reader.readlines():
         curr_coords.append(float(num) for num in line.split[1:])
       coords.append(curr_coords)
@@ -163,7 +158,7 @@ def fill_rest_ids(num_nuts, ids_map, last_id):
       ids_map[i] = last_id
   return last_id
 
-def give_ids(prev_coords, prev_ids, curr_coords, vy=0.02, last_id=0):
+def give_ids(prev_coords, prev_ids, curr_coords, vy=0.02, limit_dist=0.1, last_id=0):
 #  TODO might be extra to convert in numpy array curr coords
   pred_curr_coords = np.array(prev_coords)
   curr_coords = np.array(curr_coords)
@@ -171,33 +166,32 @@ def give_ids(prev_coords, prev_ids, curr_coords, vy=0.02, last_id=0):
   num_curr_nuts = curr_coords.shape[0]
   curr_ids = {}
 
-  if num_prev_nuts is 0:
-    last_id = fill_rest_ids(num_curr_nuts, curr_ids, last_id)
-    return curr_ids, last_id
-    
+  if num_prev_nuts is not 0:
+    pred_curr_coords[:, 1] += vy
 
-  pred_curr_coords[:, 1] += vy
+    #prev nuts row, curr nuts column
+    dists = calculate_euclidean_distances(pred_curr_coords[:, :2], curr_coords[:, :2]) 
+    # mit be done parrallel, uuid might make it even more parrallel
+    for i in range(min(num_prev_nuts, num_curr_nuts)):
+      curr_mins = np.min(dists, axis=1)
+      prev_nut_index = np.argmin(curr_mins) # prev nut index
+      curr_nut_index = np.argmin(dists[prev_nut_index])
 
-  #prev nuts row, curr nuts column
-  dists = calculate_euclidean_distances(pred_curr_coords[:, :2], curr_coords[:, :2]) 
-  # mit be done parrallel, uuid might make it even more parrallel
-  for i in range(min(num_prev_nuts, num_curr_nuts)):
-    curr_mins = np.min(dists, axis=1)
-    prev_nut_index = np.argmin(curr_mins) # prev nut index
-    curr_nut_index = np.argmin(dists[prev_nut_index])
+      dists[prev_nut_index, :] = 100
+      dists[:, curr_nut_index] = 100
 
-    dists[prev_nut_index, :] = 100
-    dists[:, curr_nut_index] = 100
+      dist = dists[prev_nut_index, curr_nut_index]
+      if dist < limit_dist :
+        break
 
-    prev_id = prev_ids[prev_nut_index]
-    if prev_id == -1:
-      last_id += 1
-      curr_ids[curr_nut_index] = last_id
-    else:
-      curr_ids[curr_nut_index] = prev_id
+      prev_id = prev_ids[prev_nut_index]
+      if prev_id == -1:
+        last_id += 1
+        curr_ids[curr_nut_index] = last_id
+      else:
+        curr_ids[curr_nut_index] = prev_id
 
-  if num_curr_nuts > num_prev_nuts:
-    last_id = fill_rest_ids(num_curr_nuts, curr_ids, last_id)
+  last_id = fill_rest_ids(num_curr_nuts, curr_ids, last_id)
   return curr_ids, last_id
 
 def get_labeled_image(coords, ids_map, image_path):
