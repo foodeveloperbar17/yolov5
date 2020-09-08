@@ -135,9 +135,13 @@ def get_coordinates_from_textfiles(textfiles_list):
   for textfile in textfiles_list:
     with open(textfile, 'r') as reader:
       curr_coords = []
+  #     for line in reader.readlines():
+  #       parts = line.split()
+  #       curr_coords.append([float(parts[1]), float(parts[2]), float(parts[3]), float(parts[4])])
+  #     coords.append(curr_coords)
+  # return coords
       for line in reader.readlines():
-        parts = line.split()
-        curr_coords.append([float(parts[1]), float(parts[2]), float(parts[3]), float(parts[4])])
+        curr_coords.append(float(num) for num in line.split[1:])
       coords.append(curr_coords)
   return coords
 
