@@ -125,7 +125,7 @@ def get_coordinates_with_file_index_from_textfiles(textfiles_list):
       lines = reader.readlines()
       for line in lines:
         parts = line.split()
-        curr_coords.append([float(num) for num in line.split[1:]])
+        curr_coords.append([float(num) for num in line.split()[1:]])
       index = get_index_from_file_name(textfile)
       coords_with_textfiles.append((index, curr_coords))
   return coords_with_textfiles
@@ -136,7 +136,7 @@ def get_coordinates_from_textfiles(textfiles_list):
     with open(textfile, 'r') as reader:
       curr_coords = []
       for line in reader.readlines():
-        curr_coords.append([float(num) for num in line.split[1:]])
+        curr_coords.append([float(num) for num in line.split()[1:]])
       coords.append(curr_coords)
   return coords
 
