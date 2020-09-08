@@ -179,6 +179,7 @@ def give_ids(prev_coords, prev_ids, curr_coords, vy=0.02, limit_dist=0.1, last_i
 
       dist = dists[prev_nut_index, curr_nut_index]
       if dist > limit_dist:
+        print('more than limit', dist)
         break
 
       dists[prev_nut_index, :] = 100
