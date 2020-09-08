@@ -207,7 +207,7 @@ def get_labeled_image(coords, ids_map, image_path):
     cv2.putText(img, 'ID:' + str(ids_map[i]), (x - 55, int(y + h / 2)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
   return img
 
-def record_tracking(image_path_list, coords, video_path, fps, vy = 0.02):
+def record_tracking(image_path_list, coords, video_path, fps, vy = 0.02, dist_limit=0.1):
   if os.path.isfile(video_path):
     os.remove(video_path)
   prev_coords = []
@@ -217,7 +217,7 @@ def record_tracking(image_path_list, coords, video_path, fps, vy = 0.02):
   vid_writer = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*fourcc), fps, (640, 480))
   for i in range(len(image_path_list)):
     curr_coords = coords[i]
-    curr_ids, last_id = give_ids(prev_coords, prev_ids, curr_coords, vy, last_id)
+    curr_ids, last_id = give_ids(prev_coords, prev_ids, curr_coords, vy, dist_limit, last_id)
 
     img = get_labeled_image(curr_coords, curr_ids, image_path_list[i])
     vid_writer.write(img)
