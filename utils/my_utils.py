@@ -117,6 +117,19 @@ def get_index_from_file_name(filename):
   number_index = filename.find('frame') + 5
   return filename[number_index:filename.find('.txt')]
 
+def get_coordinates_with_file_index_from_textfiles(textfiles_list):
+  coords_with_textfiles = []
+  for textfile in textfiles_list:
+    with open(textfile, 'r') as reader:
+      curr_coords = []
+      lines = reader.readlines()
+      for line in lines:
+        parts = line.split()
+        curr_coords.append([float(parts[1]), float(parts[2]), float(parts[3]), float(parts[4])])
+      index = get_index_from_file_name(textfile)
+      coords_with_textfiles.append((index, curr_coords))
+  return coords_with_textfiles
+
 def get_coordinates_from_textfiles(textfiles_list):
   coords = []
   for textfile in textfiles_list:
@@ -126,8 +139,7 @@ def get_coordinates_from_textfiles(textfiles_list):
       for line in lines:
         parts = line.split()
         curr_coords.append([float(parts[1]), float(parts[2]), float(parts[3]), float(parts[4])])
-      index = get_index_from_file_name(textfile)
-      coords.append((index, curr_coords))
+      coords.append(curr_coords)
   return coords
 
 def get_image_path_from_text_path(f, old_parent_name, new_parent_name):
@@ -198,7 +210,8 @@ def get_labeled_image(coords, ids_map, image_path):
   return img
 
 def record_tracking(image_path_list, coords, video_path, fps, vy = 0.02):
-  os.remove(video_path)
+  if os.path.isfile(video_path):
+    os.remove(video_path)
   prev_coords = []
   prev_ids = {}
   last_id = 0
@@ -208,8 +221,7 @@ def record_tracking(image_path_list, coords, video_path, fps, vy = 0.02):
     curr_coords = coords[i]
     curr_ids, last_id = give_ids(prev_coords, prev_ids, curr_coords, vy, last_id)
 
-    image_path = image_path_list[i].replace('bad_labels', 'bad_images').replace('.txt', '.jpg')
-    img = get_labeled_image(curr_coords, curr_ids, image_path)
+    img = get_labeled_image(curr_coords, curr_ids, image_path_list[i])
     vid_writer.write(img)
 
     prev_ids = curr_ids
