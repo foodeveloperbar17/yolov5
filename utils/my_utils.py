@@ -172,7 +172,7 @@ def give_ids(prev_coords, prev_ids, curr_coords, vy=0.02, limit_dist=0.1, last_i
     #prev nuts row, curr nuts column
     dists = calculate_euclidean_distances(pred_curr_coords[:, :2], curr_coords[:, :2]) 
     # mit be done parrallel, uuid might make it even more parrallel
-    for i in range(min(num_prev_nuts, num_curr_nuts)):
+    for _ in range(min(num_prev_nuts, num_curr_nuts)):
       curr_mins = np.min(dists, axis=1)
       prev_nut_index = np.argmin(curr_mins) # prev nut index
       curr_nut_index = np.argmin(dists[prev_nut_index])
@@ -181,7 +181,7 @@ def give_ids(prev_coords, prev_ids, curr_coords, vy=0.02, limit_dist=0.1, last_i
       dists[:, curr_nut_index] = 100
 
       dist = dists[prev_nut_index, curr_nut_index]
-      if dist < limit_dist :
+      if dist > limit_dist:
         break
 
       prev_id = prev_ids[prev_nut_index]
