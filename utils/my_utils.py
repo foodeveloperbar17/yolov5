@@ -8,8 +8,8 @@ import random
 import numpy as np
 
 def get_images_from_video(video_path, dir_to_result_images,
-                          class_prefix, every_n_image=1, file_extention='png',
-                          pad_zeros=True, num_zeros=5):
+                          class_prefix, every_n_image=1, file_extention='jpg',
+                          pad_zeros=True, num_zeros=6):
   force_create_folder(dir_to_result_images)
   
   videocap = cv2.VideoCapture(video_path)
@@ -51,7 +51,7 @@ def copy_labels_to_dir(labels_dir, images_dir):
   print(len(os.listdir(images_dir)))
 
 def get_text_files_from_dir(dir_path):
-  return [f for f in os.listdir(dir_path) if '.txt' in f]
+  return [f for f in os.listdir(dir_path) if f.endswith('.txt')]
 
 def force_create_folder(dir_path):
   if os.path.exists(dir_path):
@@ -229,3 +229,33 @@ def record_tracking(image_path_list, coords, video_path, fps, vy = 0.02, dist_li
       print(i)
   vid_writer.release()
 
+def get_assigned_distances(coords, vy=0.02):
+  prev_coords = np.array(coords[0])
+  distances = []
+  for i in range(1, len(coords)):
+    curr_coords = coords[i]
+    curr_coords = np.array(curr_coords)
+    prev_coords[:, 1] += vy
+    dists = calculate_euclidean_distances(prev_coords[:, :2], curr_coords[:, :2])
+    
+    curr_assigned_dists = []
+    for i in range(min(prev_coords.shape[0], curr_coords.shape[0])):
+      curr_mins = np.min(dists, axis=1)
+      prev_nut_index = np.argmin(curr_mins)
+      curr_nut_index = np.argmin(dists[prev_nut_index])
+
+      curr_assigned_dists.append(dists[prev_nut_index, curr_nut_index])
+
+      dists[prev_nut_index, :] = 100
+      dists[:, curr_nut_index] = 100
+    distances.append(curr_assigned_dists)
+
+    prev_coords = curr_coords
+  return distances
+
+def video_list_to_images(video_path_class_mappings, images_base_dir, every_n_image=1):
+  force_create_folder(images_base_dir)
+  for video_path, class_prefix in video_path_class_mappings:
+    images_folder = join(images_base_dir, class_prefix)
+    os.mkdir(images_folder)
+    get_images_from_video(video_path, images_folder, class_prefix, every_n_image, 'jpg', True, 6)
