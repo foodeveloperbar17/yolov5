@@ -259,3 +259,38 @@ def video_list_to_images(video_path_class_mappings, images_base_dir, every_n_ima
     images_folder = join(images_base_dir, class_prefix)
     os.mkdir(images_folder)
     get_images_from_video(video_path, images_folder, class_prefix, every_n_image, 'jpg', True, 6)
+
+def filter_text_labels(src, dest, width, height):
+    removed = 0
+    if os.path.exists(dest):
+        shutil.rmtree(dest)
+    os.mkdir(dest)
+    textfiles = [f for f in os.listdir(src) if f.endswith('.txt')]
+    for f in textfiles:
+        old_file_path = join(src, f)
+        new_file_path = join(dest, f)
+        with open(old_file_path, 'r') as reader:
+            new_lines = []
+            for line in reader.readlines():
+                splitted = line.split()
+                curr_width = float(splitted[3])
+                curr_height = float(splitted[4])
+                if curr_width > width and curr_height > height:
+                    new_lines.append(line)
+                else:
+                    removed += 1
+            if len(new_lines) != 0:
+                with open(new_file_path, 'w') as writer:
+                    for line in new_lines:
+                        writer.write(line + '\n')
+    print(removed)
+
+def see_classes_distribution(labels_folder):
+  distributions = [0, 0, 0, 0]
+  for f in os.listdir(labels_folder):
+    if f.endswith('.txt'):
+      with open(f, 'r') as reader:
+        for line in reader.readlines():
+          cls = int(line.split()[0])
+          distributions[cls] += 1
+  return distributions
