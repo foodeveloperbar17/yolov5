@@ -404,7 +404,7 @@ if __name__ == '__main__':
     parser.add_argument('--local_rank', type=int, default=-1, help='DDP parameter, do not modify')
     parser.add_argument('--logdir', type=str, default='runs/', help='logging directory')
     parser.add_argument('--workers', type=int, default=8, help='maximum number of dataloader workers')
-    parser.add_argument('--augment', type=bool, default=True, help='augment during training')
+    parser.add_argument('--augment', action='store_true' help='augment during training')
     opt = parser.parse_args()
 
     # Set DDP variables
