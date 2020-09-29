@@ -914,10 +914,9 @@ def apply_classifier(x, model, img, im0):
 
 
 def fitness(x):
-    print(x)
     # Returns fitness (for use with results.txt or evolve.txt)
-    w = [0.0, 0.0, 0.1, 0.9]  # weights for [P, R, mAP@0.5, mAP@0.5:0.95]
-    return (x[:, :4] * w).sum(1)
+    w = [0.0, 0.0, 0.1, 0.9, 0, 0, 0.2]  # weights for [P, R, mAP@0.5, mAP@0.5:0.95]
+    return (x[:, :7] * w).sum(1)
 
 
 def output_to_target(output, width, height):
