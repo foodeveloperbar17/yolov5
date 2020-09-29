@@ -174,7 +174,7 @@ def train(hyp, opt, device, tb_writer=None):
     if rank in [-1, 0]:
         ema.updates = start_epoch * nb // accumulate  # set EMA updates
         testloader = create_dataloader(test_path, imgsz_test, total_batch_size, gs, opt,
-                                       hyp=hyp, augment=False, cache=opt.cache_images, rect=True, rank=-1,
+                                       hyp=hyp, augment=False, cache=opt.cache_test_images, rect=True, rank=-1,
                                        world_size=opt.world_size, workers=opt.workers)[0]  # only runs on process 0
 
     # Model parameters
@@ -394,6 +394,7 @@ if __name__ == '__main__':
     parser.add_argument('--evolve', action='store_true', help='evolve hyperparameters')
     parser.add_argument('--bucket', type=str, default='', help='gsutil bucket')
     parser.add_argument('--cache-images', action='store_true', help='cache images for faster training')
+    parser.add_argument('--cache-test-images', action='store_true', help='cache images for faster training')
     parser.add_argument('--image-weights', action='store_true', help='use weighted image selection for training')
     parser.add_argument('--name', default='', help='renames results.txt to results_name.txt if supplied')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')

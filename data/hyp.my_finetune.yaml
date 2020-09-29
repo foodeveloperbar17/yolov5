@@ -1,5 +1,5 @@
 
-lr0: 0.00447
+lr0: 0.00147
 lrf: 0.114
 momentum: 0.873
 weight_decay: 0.00047
@@ -17,7 +17,7 @@ hsv_s: 0.01
 hsv_v: 0.01
 degrees: 0.404
 translate: 0.206
-scale: 0.86
+scale: 0.05
 shear: 0.795
 perspective: 0.0
 flipud: 0.00756

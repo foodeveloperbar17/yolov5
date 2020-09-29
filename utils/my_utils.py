@@ -76,6 +76,7 @@ def train_test_split(image_src, label_src, train_dir, valid_dir, test_dir, valid
     image_file = text_file[:-4] + '.' + image_extention
     curr_image_src = join(image_src, image_file)
     if not os.path.exists(curr_image_src):
+      absent += 1
       continue
 
     text_file_dest = None
