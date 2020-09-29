@@ -58,29 +58,43 @@ def force_create_folder(dir_path):
     shutil.rmtree(dir_path)
   os.mkdir(dir_path)
 
-def train_test_split(image_src, label_src, train_dir, test_dir, test_ratio=0.2, image_extention='jpg'):
+def train_test_split(image_src, label_src, train_dir, valid_dir, test_dir, valid_ratio = 0.2, test_ratio=0, image_extention='jpg'):
+  absent = 0
   force_create_folder(train_dir)
+  force_create_folder(valid_dir)
   force_create_folder(test_dir)
   
   force_create_folder(join(train_dir, 'labels'))
   force_create_folder(join(train_dir, 'images'))
+  force_create_folder(join(valid_dir, 'labels'))
+  force_create_folder(join(valid_dir, 'images'))
   force_create_folder(join(test_dir, 'labels'))
   force_create_folder(join(test_dir, 'images'))
   
   text_files = get_text_files_from_dir(label_src)
   for text_file in text_files:
     image_file = text_file[:-4] + '.' + image_extention
+    curr_image_src = join(image_src, image_file)
+    if not os.path.exists(curr_image_src):
+      continue
+
     text_file_dest = None
     image_file_dest = None
-    if random.uniform(0, 1) < test_ratio:
+
+    r = random.uniform(0, 1)
+    if r < test_ratio:
       text_file_dest = join(test_dir, 'labels', text_file)
       image_file_dest = join(test_dir, 'images', image_file)
+    elif r < test_ratio + valid_ratio:
+      text_file_dest = join(valid_dir, 'labels', text_file)
+      image_file_dest = join(valid_dir, 'images', image_file)
     else :
       text_file_dest = join(train_dir, 'labels', text_file)
       image_file_dest = join(train_dir, 'images', image_file)
 
     shutil.copy2(join(label_src, text_file), text_file_dest)
-    shutil.copy2(join(image_src, image_file), image_file_dest)
+    shutil.copy2(curr_image_src, image_file_dest)
+  print('images absent ' + str(absent))
     
 def change_class_labels(dir, new_class):
   all_text_files = [f for f in os.listdir(dir) if f.endswith('.txt')]
