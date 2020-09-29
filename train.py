@@ -164,7 +164,7 @@ def train(hyp, opt, device, tb_writer=None):
 
     # Trainloader
     dataloader, dataset = create_dataloader(train_path, imgsz, batch_size, gs, opt,
-                                            hyp=hyp, augment=opt.augment, cache=opt.cache_images, rect=opt.rect, rank=rank,
+                                            hyp=hyp, augment=not opt.no_augment, cache=opt.cache_images, rect=opt.rect, rank=rank,
                                             world_size=opt.world_size, workers=opt.workers)
     mlc = np.concatenate(dataset.labels, 0)[:, 0].max()  # max label class
     nb = len(dataloader)  # number of batches
@@ -404,7 +404,7 @@ if __name__ == '__main__':
     parser.add_argument('--local_rank', type=int, default=-1, help='DDP parameter, do not modify')
     parser.add_argument('--logdir', type=str, default='runs/', help='logging directory')
     parser.add_argument('--workers', type=int, default=8, help='maximum number of dataloader workers')
-    parser.add_argument('--augment', action='store_true', help='augment during training')
+    parser.add_argument('--no-augment', action='store_true', help='dont augment during training')
     opt = parser.parse_args()
 
     # Set DDP variables
