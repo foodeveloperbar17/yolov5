@@ -1,25 +1,29 @@
 
-lr0: 0.00147
-lrf: 0.114
-momentum: 0.873
-weight_decay: 0.00047
-giou: 0.0306
-cls: 0.211
-cls_pw: 0.546
-obj: 0.421
-obj_pw: 0.972
+lr0: 0.0032
+lrf: 0.12
+momentum: 0.843
+weight_decay: 0.00036
+warmup_epochs: 2.0
+warmup_momentum: 0.5
+warmup_bias_lr: 0.05
+giou: 0.0296
+cls: 0.243
+cls_pw: 0.631
+obj: 0.301
+obj_pw: 0.911
 iou_t: 0.2
-anchor_t: 2.26
-# anchors: 5.07
+anchor_t: 2.91
+# anchors: 3.63
 fl_gamma: 0.0
 hsv_h: 0.01
 hsv_s: 0.1
 hsv_v: 0.1
-degrees: 0.404
-translate: 0.206
+degrees: 0.373
+translate: 0.245
 scale: 0.05
-shear: 0.795
+shear: 0.8
 perspective: 0.0
-flipud: 0.00756
+flipud: 0.00856
 fliplr: 0.5
-mixup: 0.153
+mosaic: 0
+mixup: 0.243
