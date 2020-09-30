@@ -22,6 +22,7 @@ from scipy.cluster.vq import kmeans
 from scipy.signal import butter, filtfilt
 from tqdm import tqdm
 
+from utils.google_utils import gsutil_getsize
 from utils.torch_utils import init_seeds as init_torch_seeds
 from utils.torch_utils import is_parallel
 
@@ -132,7 +133,8 @@ def check_file(file):
     else:
         files = glob.glob('./**/' + file, recursive=True)  # find file
         assert len(files), 'File Not Found: %s' % file  # assert file was found
-        return files[0]  # return first file if multiple found
+        assert len(files) == 1, "Multiple files match '%s', specify exact path: %s" % (file, files)  # assert unique
+        return files[0]  # return file
 
 
 def check_dataset(dict):
@@ -146,10 +148,7 @@ def check_dataset(dict):
                 print('Downloading %s ...' % s)
                 if s.startswith('http') and s.endswith('.zip'):  # URL
                     f = Path(s).name  # filename
-                    if platform.system() == 'Darwin':  # avoid MacOS python requests certificate error
-                        os.system('curl -L %s -o %s' % (s, f))
-                    else:
-                        torch.hub.download_url_to_file(s, f)
+                    torch.hub.download_url_to_file(s, f)
                     r = os.system('unzip -q %s -d ../ && rm %s' % (f, f))  # unzip
                 else:  # bash script
                     r = os.system(s)
@@ -857,7 +856,9 @@ def print_mutation(hyp, results, yaml_file='hyp_evolved.yaml', bucket=''):
     print('\n%s\n%s\nEvolved fitness: %s\n' % (a, b, c))
 
     if bucket:
-        os.system('gsutil cp gs://%s/evolve.txt .' % bucket)  # download evolve.txt
+        url = 'gs://%s/evolve.txt' % bucket
+        if gsutil_getsize(url) > (os.path.getsize('evolve.txt') if os.path.exists('evolve.txt') else 0):
+            os.system('gsutil cp %s .' % url)  # download evolve.txt if larger than local
 
     with open('evolve.txt', 'a') as f:  # append result
         f.write(c + b + '\n')
@@ -1209,13 +1210,13 @@ def plot_evolution(yaml_file='data/hyp.finetune.yaml'):  # from utils.general im
     x = np.loadtxt('evolve.txt', ndmin=2)
     f = fitness(x)
     # weights = (f - f.min()) ** 2  # for weighted results
-    plt.figure(figsize=(10, 10), tight_layout=True)
+    plt.figure(figsize=(10, 12), tight_layout=True)
     matplotlib.rc('font', **{'size': 8})
     for i, (k, v) in enumerate(hyp.items()):
         y = x[:, i + 7]
         # mu = (y * weights).sum() / weights.sum()  # best weighted result
         mu = y[f.argmax()]  # best single result
-        plt.subplot(5, 5, i + 1)
+        plt.subplot(6, 5, i + 1)
         plt.scatter(y, f, c=hist2d(y, f, 20), cmap='viridis', alpha=.8, edgecolors='none')
         plt.plot(mu, f.max(), 'k+', markersize=15)
         plt.title('%s = %.3g' % (k, mu), fontdict={'size': 9})  # limit to 40 characters
