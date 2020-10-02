@@ -309,3 +309,25 @@ def see_classes_distribution(labels_folder):
           cls = int(line.split()[0])
           distributions[cls] += 1
   return distributions
+
+def copy_image_with_label(image_src, label_src, dest, label_name, image_extention='jpg'):
+  image_name = label_name[:-3] + image_extention
+  image_src_path = join(image_src, image_name)
+  label_src_path = join(label_src, label_name)
+  if os.path.exists(image_src_path):
+    image_dest_path = join(dest, image_name)
+    label_dest_path = join(dest, label_name)
+    shutil.copy2(image_src_path, image_dest_path)
+    shutil.copy2(label_src_path, label_dest_path)
+  else:
+    print('cant find image in path {}'.format(image_src_path))
+
+def distribute_evenly(src, dest, class_prefixes, num_instance):
+  for class_prefix in class_prefixes:
+    class_count = 0
+    for class_text_file in [f for f in os.listdir(src) if f.endswith('.txt') and f[0] == class_prefix]:
+      with open(join(src, class_text_file), 'r') as reader:
+        class_count += len(reader.readlines())
+      copy_image_with_label(src, src, dest, class_text_file)
+      if class_count >= num_instance:
+        break
