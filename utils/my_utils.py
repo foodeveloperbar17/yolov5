@@ -304,7 +304,7 @@ def see_classes_distribution(labels_folder):
   distributions = [0, 0, 0, 0]
   for f in os.listdir(labels_folder):
     if f.endswith('.txt'):
-      with open(f, 'r') as reader:
+      with open(join(labels_folder, f), 'r') as reader:
         for line in reader.readlines():
           cls = int(line.split()[0])
           distributions[cls] += 1
