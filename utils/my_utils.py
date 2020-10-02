@@ -333,3 +333,14 @@ def distribute_evenly(src, dest, class_prefixes, num_instance):
       copy_image_with_label(src, src, dest, class_text_file)
       if class_count >= num_instance:
         break
+
+
+
+def get_video_from_images(images_dir, video_path, fps):
+  if os.path.exists(video_path):
+    os.remove(video_path)
+  fourcc = 'mp4v'
+  video_writer = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*fourcc), fps, (640, 480))
+  for img in [join(images_dir, f) for f in os.listdir(images_dir) if f.endswith('jpg')]:
+    video_writer.write(cv2.imread(img))
+  video_writer.release()
